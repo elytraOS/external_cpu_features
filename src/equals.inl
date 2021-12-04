@@ -1,4 +1,4 @@
-// Copyright 2017 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CPU_FEATURES_TEST_HWCAPS_FOR_TESTING_H_
-#define CPU_FEATURES_TEST_HWCAPS_FOR_TESTING_H_
+#include <stdbool.h>
+#include <stddef.h>
 
-#include "internal/hwcaps.h"
-
-namespace cpu_features {
-
-void SetHardwareCapabilities(uint32_t hwcaps, uint32_t hwcaps2);
-void SetPlatformPointer(const char* string);
-void SetBasePlatformPointer(const char* string);
-
-// To be called before each test.
-void ResetHwcaps();
-
-}  // namespace cpu_features
-
-#endif  // CPU_FEATURES_TEST_HWCAPS_FOR_TESTING_H_
+static bool equals(const char *lhs, const char *rhs, size_t count) {
+  for (size_t i = 0; i < count; ++i)
+    if (lhs[i] != rhs[i]) return false;
+  return true;
+}

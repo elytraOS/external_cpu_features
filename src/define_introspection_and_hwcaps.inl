@@ -12,20 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CPU_FEATURES_TEST_HWCAPS_FOR_TESTING_H_
-#define CPU_FEATURES_TEST_HWCAPS_FOR_TESTING_H_
-
+#include "define_introspection.inl"
 #include "internal/hwcaps.h"
 
-namespace cpu_features {
+#define LINE(ENUM, NAME, CPUINFO_FLAG, HWCAP, HWCAP2) \
+  [ENUM] = (HardwareCapabilities){HWCAP, HWCAP2},
+static const HardwareCapabilities kHardwareCapabilities[] = {
+    INTROSPECTION_TABLE};
+#undef LINE
 
-void SetHardwareCapabilities(uint32_t hwcaps, uint32_t hwcaps2);
-void SetPlatformPointer(const char* string);
-void SetBasePlatformPointer(const char* string);
-
-// To be called before each test.
-void ResetHwcaps();
-
-}  // namespace cpu_features
-
-#endif  // CPU_FEATURES_TEST_HWCAPS_FOR_TESTING_H_
+#define LINE(ENUM, NAME, CPUINFO_FLAG, HWCAP, HWCAP2) [ENUM] = CPUINFO_FLAG,
+static const char* kCpuInfoFlags[] = {INTROSPECTION_TABLE};
+#undef LINE
