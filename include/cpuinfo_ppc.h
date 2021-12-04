@@ -70,6 +70,7 @@ typedef struct {
   PPCFeatures features;
 } PPCInfo;
 
+// This function is guaranteed to be malloc, memset and memcpy free.
 PPCInfo GetPPCInfo(void);
 
 typedef struct {

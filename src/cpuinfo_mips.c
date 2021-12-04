@@ -1,3 +1,5 @@
+// Copyright 2017 Google LLC
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,32 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "cpu_features_macros.h"
-
-#ifdef CPU_FEATURES_ARCH_MIPS
-#if defined(CPU_FEATURES_OS_LINUX) || defined(CPU_FEATURES_OS_ANDROID)
-
 #include "cpuinfo_mips.h"
 
-////////////////////////////////////////////////////////////////////////////////
-// Definitions for introspection.
-////////////////////////////////////////////////////////////////////////////////
-#define INTROSPECTION_TABLE                     \
-  LINE(MIPS_MSA, msa, "msa", MIPS_HWCAP_MSA, 0) \
-  LINE(MIPS_EVA, eva, "eva", 0, 0)              \
-  LINE(MIPS_R6, r6, "r6", MIPS_HWCAP_R6, 0)
-#define INTROSPECTION_PREFIX Mips
-#define INTROSPECTION_ENUM_PREFIX MIPS
-#include "define_introspection_and_hwcaps.inl"
-
-////////////////////////////////////////////////////////////////////////////////
-// Implementation.
-////////////////////////////////////////////////////////////////////////////////
+#include <assert.h>
 
 #include "internal/filesystem.h"
 #include "internal/hwcaps.h"
 #include "internal/stack_line_reader.h"
 #include "internal/string_view.h"
+
+// Generation of feature's getters/setters functions and kGetters, kSetters,
+// kCpuInfoFlags and kHardwareCapabilities global tables.
+#define DEFINE_TABLE_FEATURES                      \
+  FEATURE(MIPS_MSA, msa, "msa", MIPS_HWCAP_MSA, 0) \
+  FEATURE(MIPS_EVA, eva, "eva", 0, 0)              \
+  FEATURE(MIPS_R6, r6, "r6", MIPS_HWCAP_R6, 0)
+#define DEFINE_TABLE_FEATURE_TYPE MipsFeatures
+#include "define_tables.h"
 
 static bool HandleMipsLine(const LineResult result,
                            MipsFeatures* const features) {
@@ -84,5 +77,16 @@ MipsInfo GetMipsInfo(void) {
   return info;
 }
 
-#endif  //  defined(CPU_FEATURES_OS_LINUX) || defined(CPU_FEATURES_OS_ANDROID)
-#endif  // CPU_FEATURES_ARCH_MIPS
+////////////////////////////////////////////////////////////////////////////////
+// Introspection functions
+
+int GetMipsFeaturesEnumValue(const MipsFeatures* features,
+                             MipsFeaturesEnum value) {
+  if (value >= MIPS_LAST_) return false;
+  return kGetters[value](features);
+}
+
+const char* GetMipsFeaturesEnumName(MipsFeaturesEnum value) {
+  if (value >= MIPS_LAST_) return "unknown feature";
+  return kCpuInfoFlags[value];
+}
